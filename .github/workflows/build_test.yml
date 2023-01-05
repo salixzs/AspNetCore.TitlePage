@@ -26,7 +26,7 @@ jobs:
       with:
         dotnet-version: 7.x
     - name: Build
-      run: dotnet build -c Release Source/Salix.AspNetCore.TitlePage.csproj
+      run: dotnet build -c Release Source/Salix.AspNetCore.TitlePage/Salix.AspNetCore.TitlePage.csproj
 
     - name: Test
       run: dotnet test
