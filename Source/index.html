@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>{ApiName}</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Segoe UI", Roboto, Arial, sans-serif;
+        font-size: 1rem;
+        font-weight: 400;
+        line-height: 1.5;
+        background-color: rgb(30, 30, 47);
+        color: #b1b1b5;
+        padding: 1em;
+        padding-top: 0;
+      }
+      h1, h2, h3, h4 {
+        font-family: "Segoe UI Light", Roboto, Arial, sans-serif;
+        font-weight: 200;
+        margin-bottom: 0.3rem;
+        margin-block-start: 0;
+      }
+      p {
+        margin-top: 0;
+      }
+      a {
+        color: #9292e2;
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      a.button {
+        background-color: #4B4B72;
+        color: white;
+        padding: 1em 1.5em;
+        text-decoration: none;
+        border-radius: 5px;
+      }
+      a.button:hover {
+        text-decoration: none;
+        background-color: #6D6DAA;
+      }
+      .column {
+        float: left;
+        width: 100%;
+      }
+      .row:after {
+        content: "";
+        display: table;
+        clear: both;
+      }
+      @media (min-width: 896px) {
+        .column {
+          width: 50%;
+        }
+      }
+      #config-toggle {
+        background-color: rgb(36, 36, 53);
+        cursor: pointer;
+        min-height: 1.8em;
+      }
+      #config-toggle span, #config-toggle svg {
+        vertical-align: middle;
+        display: inline-block;
+      }
+      #config-values {
+        visibility: hidden;
+        max-height: 0;
+        overflow: hidden;
+        transition: 0.5s;
+      }
+      #config-values.visible {
+        visibility: visible;
+        max-height: 50em;
+        overflow: auto;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+      th, td {
+        padding: 0.2rem;
+        text-align: left;
+        border: 1px solid rgb(36, 36, 53);
+      }
+      tbody tr:nth-child(odd) {
+        background: rgb(36, 36, 53);
+      }
+      pre {
+        background-color: rgb(24, 24, 37);
+      }
+    </style>
+</head>
+<body>
+
+  <div class="row">
+  <div class="column" style="{OneColumnStyle}">
+    <h1>{ApiName}</h1>
+    <p>{Description}</p>
+    <hr/>
+    <h2>Version: <strong>{Version}</strong></h2>
+    <h3>Built: <strong>{Built}</strong></h3>
+    <h3>Compilation mode: {Mode}</h3>
+    <h3>Environment: {Environment}</h3>
+    {Buttons}
+    <hr style="margin-top: 2em;"/>
+
+    <div id="config-toggle">
+      <svg id="svg-plus" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1.4em" height="1.4em" style="display: inline; -ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path d="M17 13h-4v4h-2v-4H7v-2h4V7h2v4h4m2-8H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2z" fill="#626262"/></svg>
+      <svg id="svg-minus" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1.4em" height="1.4em" style="display: none; -ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path d="M17 13H7v-2h10m2-8H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2z" fill="#626262"/></svg>
+      <span><strong>Configured values</strong></span>
+    </div>
+
+    <div id="config-values">
+      {ConfigValues}
+    </div>
+  </div>
+
+  {IncludeFile}
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", function(event) {
+  document.getElementById("config-toggle").addEventListener('click', function () {
+    document.getElementById('config-values').classList.toggle('visible');
+    var iconplus = document.getElementById("svg-plus");
+    var iconminus = document.getElementById("svg-minus");
+    if (iconplus.style.display === "none") {
+      iconplus.style.display = "inline";
+      iconminus.style.display = "none";
+    } else {
+      iconplus.style.display = "none";
+      iconminus.style.display = "inline";
+    }
+  });
+});
+</script>
+</body>
+</html>
