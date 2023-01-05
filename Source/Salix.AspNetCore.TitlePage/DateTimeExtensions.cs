@@ -74,7 +74,7 @@ internal static class DateTimeExtensions
         var str = new StringBuilder();
 
         // Handle multiple dates separately
-        if (endDate.HasValue && endDate.Value > startDate)
+        if (endDate > startDate)
         {
             if (startDate.Month == endDate.Value.Month)
             {

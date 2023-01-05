@@ -1,6 +1,5 @@
 using System.Text;
 using System.Text.RegularExpressions;
-using Salix.AspNetCore.Utilities;
 
 namespace Salix.AspNetCore.TitlePage;
 
@@ -9,7 +8,7 @@ namespace Salix.AspNetCore.TitlePage;
 /// </summary>
 public class IndexPage
 {
-    internal IndexPageValues IndexPageOptions { get; private set; } = new IndexPageValues();
+    internal IndexPageValues IndexPageOptions { get; } = new IndexPageValues();
 
     /// <summary>
     /// Index page with default options/values.
@@ -19,6 +18,7 @@ public class IndexPage
     /// <summary>
     /// Index page with default options/values and specified name.
     /// </summary>
+    /// <param name="apiName">Name of the API</param>
     public IndexPage(string apiName) => this.IndexPageOptions.SetName(apiName);
 
     /// <summary>
@@ -45,7 +45,7 @@ public class IndexPage
             buttons.AppendLine("<p style=\"margin-top:2em;\">");
             foreach (var button in this.IndexPageOptions.LinkButtons)
             {
-                buttons.AppendLine($"<a class=\"button\" href=\"{button.Value}\">{button.Key}</a>");
+                buttons.Append("<a class=\"button\" href=\"").Append(button.Value).Append("\">").Append(button.Key).AppendLine("</a>");
             }
 
             indexHtml = indexHtml.Replace("{Buttons}", buttons.ToString());
@@ -63,7 +63,7 @@ public class IndexPage
                 .Replace("{OneColumnStyle}", "padding-right: 2rem;")
                 .Replace("{IncludeFile}", LoadFileContents(this.IndexPageOptions.IncludeFileName ?? "Missing file"));
 
-        indexHtml = this.IndexPageOptions.Configurations != null && this.IndexPageOptions.Configurations.Any()
+        indexHtml = this.IndexPageOptions.Configurations?.Any() == true
             ? indexHtml.Replace("{ConfigValues}", this.GenerateConfigurationsTable())
             : indexHtml.Replace("{ConfigValues}", "Configuration values are hidden for security purposes.");
 
@@ -99,19 +99,19 @@ public class IndexPage
     private string GenerateConfigurationsTable()
     {
         var builder = new StringBuilder();
-        builder.AppendLine("<table>");
-        builder.AppendLine("<thead>");
-        builder.AppendLine("<tr><th>Key</th><th>Value</th></tr>");
-        builder.AppendLine("</thead>");
-        builder.AppendLine("<tbody>");
+        builder.AppendLine("<table>")
+            .AppendLine("<thead>")
+            .AppendLine("<tr><th>Key</th><th>Value</th></tr>")
+            .AppendLine("</thead>")
+            .AppendLine("<tbody>");
 #pragma warning disable CS8602 // Dereference of a possibly null reference - called when checked
         foreach (var cfg in this.IndexPageOptions.Configurations)
         {
-            builder.AppendLine($"<tr><td>{cfg.Key}</td><td>{cfg.Value}</td></tr>");
+            builder.Append("<tr><td>").Append(cfg.Key).Append("</td><td>").Append(cfg.Value).AppendLine("</td></tr>");
         }
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
-        builder.AppendLine("</tbody>");
-        builder.AppendLine("</table>");
+        builder.AppendLine("</tbody>")
+            .AppendLine("</table>");
 
         return builder.ToString();
     }

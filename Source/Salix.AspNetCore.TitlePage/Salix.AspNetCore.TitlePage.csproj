@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
-    <RootNamespace>Salix.AspNetCore.Utilities</RootNamespace>
+    <RootNamespace>Salix.AspNetCore.TitlePage</RootNamespace>
     <LangVersion>latest</LangVersion>
     <NeutralLanguage>en</NeutralLanguage>
     <Nullable>enable</Nullable>
@@ -27,8 +27,8 @@
 Adds title/home page for API with version number, ability to show selected configuration and custom content.
     </Description>
     <PackageReadmeFile>nuget_readme.md</PackageReadmeFile>
-    <PackageProjectUrl>https://github.com/salixzs/AspNetCore.Utilities</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/salixzs/AspNetCore.Utilities</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/salixzs/AspNetCore.TitlePage</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/salixzs/AspNetCore.TitlePage</RepositoryUrl>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
 
     <PackageReleaseNotes>
@@ -40,15 +40,25 @@ Extracted from meta package Utilities.
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="../utilities.png" Pack="true" Visible="false" PackagePath="" />
-    <None Include="../nuget_readme.md" Pack="true" Visible="false" PackagePath="" />
+    <None Include="../../utilities.png" Pack="true" Visible="false" PackagePath="" />
+    <None Include="../../nuget_readme.md" Pack="true" Visible="false" PackagePath="" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="7.0.0" />
+    <PackageReference Include="Roslynator.Analyzers" Version="4.2.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
+  <!-- Making internal class/methods visible to test solution-->
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+      <_Parameter1>$(AssemblyName).Tests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
   <ItemGroup>
     <Compile Update="PageHtml.Designer.cs">
       <DesignTime>True</DesignTime>
@@ -56,7 +66,6 @@ Extracted from meta package Utilities.
       <DependentUpon>PageHtml.resx</DependentUpon>
     </Compile>
   </ItemGroup>
-
   <ItemGroup>
     <EmbeddedResource Update="PageHtml.resx">
       <Generator>ResXFileCodeGenerator</Generator>

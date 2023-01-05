@@ -34,7 +34,7 @@ public class TitlePageController : ControllerBase
             });
 
         // #if !DEBUG <--- Do that only when running not in DEBUG mode
-        var obfuscatedConfig = ObfuscateConfigurationValues(configurationItems);
+        var obfuscatedConfig = ObfuscateConfigurationValues(configurationItems!);
         // #endif
 
         var apiAssembly = Assembly.GetAssembly(typeof(TitlePageController));

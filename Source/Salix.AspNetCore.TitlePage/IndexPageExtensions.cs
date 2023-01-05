@@ -101,7 +101,7 @@ public static class IndexPageExtensions
     /// <param name="partsToReturn">How many parts/numbers to return as version (AssemblyInfo can contain 4 by default or custom).</param>
     public static IndexPage SetVersionFromAssembly(this IndexPage idxPage, Assembly assembly, int partsToReturn = 2)
     {
-        string[] versionParts = assembly.GetName().Version.ToString().Split('.');
+        string[] versionParts = assembly.GetName().Version!.ToString().Split('.');
         string version = versionParts.Length switch
         {
             0 => "Not determined",
@@ -138,7 +138,7 @@ public static class IndexPageExtensions
     /// </returns>
     public static IndexPage SetBuildTimeFromAssembly(this IndexPage idxPage, Assembly assembly)
     {
-        string[] version = assembly.GetName().Version.ToString().Split('.');
+        string[] version = assembly.GetName().Version!.ToString().Split('.');
 
         if (version.Length != 4)
         {
@@ -197,7 +197,6 @@ public static class IndexPageExtensions
     /// <param name="idxPage">Page object.</param>
     /// <param name="configurations">Collections of configuration items to add.</param>
     /// <param name="shouldHide">When true (default - false) - will not add given items to page. Used for dynamic control (Hosting.IsDevelopment).</param>
-    /// <returns></returns>
     public static IndexPage SetConfigurationValues(this IndexPage idxPage, Dictionary<string, string> configurations, bool shouldHide = false)
     {
         if (!shouldHide)

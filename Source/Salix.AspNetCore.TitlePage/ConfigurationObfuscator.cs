@@ -7,8 +7,17 @@ namespace Salix.AspNetCore.TitlePage;
 /// <summary>
 /// Extensions to string values for obfuscation
 /// </summary>
-public static class ConfigurationObfuscator
+public static partial class ConfigurationObfuscator
 {
+    [GeneratedRegex(@"(?<key>[^=;,]+)=(?<val>[^;,]+(,\d+)?)", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase, matchTimeoutMilliseconds: 1000)]
+    private static partial Regex SqlConnectionStringRegex();
+
+    [GeneratedRegex(@"\A(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\z", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase, matchTimeoutMilliseconds: 1000)]
+    private static partial Regex IpAddressDetermineRegex();
+
+    [GeneratedRegex(@"\b(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\b", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase, matchTimeoutMilliseconds: 1000)]
+    private static partial Regex IpAddressParseRegex();
+
     /// <summary>
     /// Hides sensitive data in SQL connection string. For local server (localhost) does not hide anything.
     /// </summary>
@@ -17,11 +26,11 @@ public static class ConfigurationObfuscator
     /// <returns>Obfuscated connection string with hidden sensitive parts.</returns>
     public static string ObfuscateSqlConnectionString(this string sqlConnectionString, bool partially = false)
     {
-        var parts = Regex.Matches(sqlConnectionString, @"(?<key>[^=;,]+)=(?<val>[^;,]+(,\d+)?)", RegexOptions.IgnoreCase);
+        var parts = SqlConnectionStringRegex().Matches(sqlConnectionString);
 
         string obfuscatedResult = string.Empty;
         bool isLocalServer = false;
-        foreach (Match part in parts)
+        foreach (var part in parts.Cast<Match>())
         {
             string key = part.Groups["key"].Value.Trim();
             string value = part.Groups["val"].Value.Trim();
@@ -50,7 +59,7 @@ public static class ConfigurationObfuscator
 
                     // address,port
                     string port = string.Empty;
-                    if (value.Contains(","))
+                    if (value.Contains(','))
                     {
                         string[] split = value.Split(',');
                         if (split.Length == 2)
@@ -61,7 +70,7 @@ public static class ConfigurationObfuscator
                     }
 
                     // server\instance
-                    if (value.Contains("\\"))
+                    if (value.Contains('\\'))
                     {
                         string[] split = value.Split('\\');
                         if (split.Length == 2)
@@ -137,18 +146,18 @@ public static class ConfigurationObfuscator
         }
 
         // email address
-        if (initialValue.Split('@').Length - 1 == 1 && initialValue.Contains("."))
+        if (initialValue.Split('@').Length - 1 == 1 && initialValue.Contains('.'))
         {
             try
             {
                 var email = new MailAddress(initialValue);
                 string[] hostParts = email.Host.Split('.');
                 string hostName = string.Join(".", hostParts, 0, hostParts.Length - 1);
-                if (new HashSet<string> { "OUTLOOK", "YANDEX", "HOTMAIL", "ICLOUD" }.Contains(hostName.ToUpperInvariant()))
+                if (new HashSet<string> { "OUTLOOK", "YANDEX", "HOTMAIL", "ICLOUD", "GMAIL" }.Contains(hostName.ToUpperInvariant()))
                 {
                     hostName = "***";
                 }
-                string topDomain = hostParts[hostParts.Length - 1];
+                string topDomain = hostParts[^1];
                 return $"{HideValuePartially(email.User)}@{HideValuePartially(hostName)}.{topDomain}";
             }
             catch
@@ -158,23 +167,22 @@ public static class ConfigurationObfuscator
         }
 
         // IP address
-        if (Regex.Match(initialValue, @"\A(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\z") != Match.Empty)
+        if (IpAddressDetermineRegex().Match(initialValue) != Match.Empty)
         {
-            var ipParts = Regex.Matches(initialValue,
-                @"\b(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\b");
+            var ipParts = IpAddressParseRegex().Matches(initialValue);
             if (ipParts[0].Groups.Count == 5) // whole + 4 parts
             {
                 string obfuscatedIp = ipParts[0].Groups[1].Value.Length switch
                 {
-                    3 => ipParts[0].Groups[1].Value.Substring(0, 2) + "*",
-                    2 => ipParts[0].Groups[1].Value.Substring(0, 1) + "*",
+                    3 => string.Concat(ipParts[0].Groups[1].Value.AsSpan(0, 2), "*"),
+                    2 => string.Concat(ipParts[0].Groups[1].Value.AsSpan(0, 1), "*"),
                     _ => "*"
                 };
                 obfuscatedIp += ".*.*.";
                 obfuscatedIp += ipParts[0].Groups[4].Value.Length switch
                 {
-                    3 => "*" + ipParts[0].Groups[4].Value.Substring(1, 2),
-                    2 => "*" + ipParts[0].Groups[4].Value.Substring(1, 1),
+                    3 => string.Concat("*", ipParts[0].Groups[4].Value.AsSpan(1, 2)),
+                    2 => string.Concat("*", ipParts[0].Groups[4].Value.AsSpan(1, 1)),
                     _ => "*"
                 };
 
@@ -197,6 +205,6 @@ public static class ConfigurationObfuscator
         }
 
         replaceablePartLength = initialValue.Length - lastThirdLength - firstThirdLength;
-        return initialValue.Substring(0, firstThirdLength) + new string('*', 5) + initialValue.Substring(firstThirdLength + replaceablePartLength, lastThirdLength);
+        return string.Concat(initialValue.AsSpan(0, firstThirdLength), new string('*', 5), initialValue.AsSpan(firstThirdLength + replaceablePartLength, lastThirdLength));
     }
 }

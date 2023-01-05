@@ -50,7 +50,7 @@ public class HomeController : ControllerBase
 
             var apiAssembly = Assembly.GetAssembly(typeof(Startup));
             IndexPage indexPage = new IndexPage("Sample API")
-                .SetDescription("Demonstrating capabilities of Salix.AspNetCore.Utilities NuGet package.")
+                .SetDescription("Demonstrating capabilities of Salix.AspNetCore.TitlePage NuGet package.")
                 .SetHostingEnvironment(_hostingEnvironment.EnvironmentName)
                 .SetVersionFromAssembly(apiAssembly, 2) // Takes version from assembly - just first two numbers as specified
                 .SetBuildTimeFromAssembly(apiAssembly)  // For this to work need non-deterministic AssemblyInfo.cs version set.
@@ -94,7 +94,7 @@ indexPage.SetName("Sample API");
 Provide any description for your API. Entire text will be shown right under API name in the page.
 ```csharp
 IndexPage indexPage = new IndexPage("Sample API")
-    .SetDescription("Demonstrating capabilities of Salix.AspNetCore.Utilities NuGet package.");
+    .SetDescription("Demonstrating capabilities of Salix.AspNetCore.TitlePage NuGet package.");
 ```
 
 ##### HostingEnvironment

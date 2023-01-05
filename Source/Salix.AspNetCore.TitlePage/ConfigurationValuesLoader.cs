@@ -23,20 +23,17 @@ public class ConfigurationValuesLoader : IConfigurationValuesLoader
                 {
                     totalKey = string.IsNullOrEmpty(parentKey) ? child.Key : $"{parentKey}[{child.Key}]";
                 }
+                else if (!string.IsNullOrEmpty(parentKey) && parentKey.EndsWith("]", StringComparison.OrdinalIgnoreCase))
+                {
+                    totalKey = string.IsNullOrEmpty(parentKey) ? child.Key : $"{parentKey}.{child.Key}";
+                }
                 else
                 {
-                    if (!string.IsNullOrEmpty(parentKey) && parentKey.EndsWith("]", StringComparison.OrdinalIgnoreCase))
-                    {
-                        totalKey = string.IsNullOrEmpty(parentKey) ? child.Key : $"{parentKey}.{child.Key}";
-                    }
-                    else
-                    {
-                        totalKey = string.IsNullOrEmpty(parentKey) ? child.Key : $"{parentKey}/{child.Key}";
-                    }
+                    totalKey = string.IsNullOrEmpty(parentKey) ? child.Key : $"{parentKey}/{child.Key}";
                 }
 
                 (string? value, var provider) = GetValueAndProvider(_configuration, child.Path);
-                if (provider != null && (whitelistFilter == null || (whitelistFilter != null && whitelistFilter.Any(k => totalKey.StartsWith(k, StringComparison.OrdinalIgnoreCase)))))
+                if (provider != null && (whitelistFilter == null || (whitelistFilter?.Any(k => totalKey.StartsWith(k, StringComparison.OrdinalIgnoreCase)) == true)))
                 {
                     if (provider.GetType().BaseType?.Name == "FileConfigurationProvider")
                     {
@@ -83,7 +80,7 @@ public class ConfigurationValuesLoader : IConfigurationValuesLoader
     {
         foreach (var provider in root.Providers.Reverse())
         {
-            if (provider.TryGet(key, out string value))
+            if (provider.TryGet(key, out string? value))
             {
                 return (value, provider);
             }

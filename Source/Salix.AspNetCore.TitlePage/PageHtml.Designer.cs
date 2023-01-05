@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Salix.AspNetCore.Utilities {
+namespace Salix.AspNetCore.TitlePage {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Salix.AspNetCore.Utilities {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Salix.AspNetCore.Utilities.PageHtml", typeof(PageHtml).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Salix.AspNetCore.TitlePage.PageHtml", typeof(PageHtml).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
