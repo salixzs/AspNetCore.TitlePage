@@ -2,11 +2,11 @@
 
 There is a possibility to create frontend (index/title) page for API to display when its root URL is open in a browser. Without any supplied information, it is very simple one:
 
-![Simple root page](./DocImages/root-page-simple.jpg)
+![Simple root page](https://raw.githubusercontent.com/salixzs/AspNetCore.TitlePage/main/DocImages/root-page-simple.jpg)
 
 Putting a little bit more effort, supplying some data to page renderer, it becomes very technically informative:
 
-![Root page example](./DocImages/root-page.JPG)
+![Root page example](https://raw.githubusercontent.com/salixzs/AspNetCore.TitlePage/main/DocImages/root-page.JPG)
 
 ### Usage
 
@@ -275,7 +275,7 @@ Dictionary<string, string> configurationItems =
 If you want to partially hide values there is a helper methods in package to hide specified values in smarter way. Supply configuration value to `string.HideValuePartially()` extension method and it will either remove small parts of value entirely or replace more than half of it with asterisks. It handles IP addresses, e-mail addresses in a specific way to leave their format intact.
 To partially hide SQL Server connection string, use extension method `connStr.ObfuscateSqlConnectionString(true)`, where boolean parameter allows to control whether Server name, Database name, User name and Passwords in connection string are hidden entirely or partially.
 
-![Obfuscation](./DocImages/obfuscation.jpg)
+![Obfuscation](https://raw.githubusercontent.com/salixzs/AspNetCore.TitlePage/main/DocImages/obfuscation.jpg)
 
 ---
 After all this is prepared, just compose ContentResult object and return it from controller action:

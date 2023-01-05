@@ -8,9 +8,9 @@ Putting a little bit more effort, supplying some data to page renderer, it becom
 
 ![Root page example](./DocImages/root-page.JPG)
 
-[![Build & Tests](https://github.com/salixzs/AspNetCore.JsonExceptionHandler/actions/workflows/build_test.yml/badge.svg?branch=main)](https://github.com/salixzs/AspNetCore.JsonExceptionHandler/actions/workflows/build_test.yml)
-[![Nuget version](https://img.shields.io/nuget/v/Salix.AspNetCore.JsonExceptionHandler.svg)](https://www.nuget.org/packages/Salix.AspNetCore.JsonExceptionHandler/)
-[![NuGet Downloads](https://img.shields.io/nuget/dt/Salix.AspNetCore.JsonExceptionHandler.svg)](https://www.nuget.org/packages/Salix.AspNetCore.JsonExceptionHandler/) (since 15-Dec-2022)
+[![Build & Tests](https://github.com/salixzs/AspNetCore.TitlePage/actions/workflows/build_test.yml/badge.svg?branch=main)](https://github.com/salixzs/AspNetCore.TitlePage/actions/workflows/build_test.yml)
+[![Nuget version](https://img.shields.io/nuget/v/Salix.AspNetCore.TitlePage.svg)](https://www.nuget.org/packages/Salix.AspNetCore.TitlePage/)
+[![NuGet Downloads](https://img.shields.io/nuget/dt/Salix.AspNetCore.TitlePage.svg)](https://www.nuget.org/packages/Salix.AspNetCore.TitlePage/) (since 5-Jan-2023)
 
 #### If you use or like...
 
