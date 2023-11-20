@@ -5,7 +5,7 @@ VisualStudioVersion = 17.5.33209.295
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.Net7.Api", "Sample.Net7.Api.csproj", "{B0082EC1-C88B-4797-928D-B8D53001CA26}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Salix.AspNetCore.TitlePage", "..\..\Source\Salix.AspNetCore.TitlePage.csproj", "{922C777B-2202-4C91-A674-3E2FEFE2E75F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Salix.AspNetCore.TitlePage", "..\..\Source\Salix.AspNetCore.TitlePage\Salix.AspNetCore.TitlePage.csproj", "{BD19D6FB-7169-4AF0-8F7F-62672D8DEA45}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{B0082EC1-C88B-4797-928D-B8D53001CA26}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B0082EC1-C88B-4797-928D-B8D53001CA26}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B0082EC1-C88B-4797-928D-B8D53001CA26}.Release|Any CPU.Build.0 = Release|Any CPU
-		{922C777B-2202-4C91-A674-3E2FEFE2E75F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{922C777B-2202-4C91-A674-3E2FEFE2E75F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{922C777B-2202-4C91-A674-3E2FEFE2E75F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{922C777B-2202-4C91-A674-3E2FEFE2E75F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD19D6FB-7169-4AF0-8F7F-62672D8DEA45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD19D6FB-7169-4AF0-8F7F-62672D8DEA45}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD19D6FB-7169-4AF0-8F7F-62672D8DEA45}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD19D6FB-7169-4AF0-8F7F-62672D8DEA45}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

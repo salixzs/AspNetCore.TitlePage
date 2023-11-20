@@ -10,7 +10,7 @@
 	<PropertyGroup>
 		<Company>Salix</Company>
 		<Product>API FrontPage </Product>
-		<Description>Customer Portal and SafeQip applications RESTful API backend.</Description>
+		<Description>Demo API backend.</Description>
 		<VersionMajor Condition="'$(VersionMajor)' == ''">1</VersionMajor>
 		<VersionMinor Condition="'$(VersionMinor)' == ''">0</VersionMinor>
 		<VersionPatch Condition="'$(VersionPatch)' == ''">$([System.DateTime]::UtcNow.Subtract($([System.DateTime]::new(2023,1,5,17,0,0))).TotalDays.ToString("0"))</VersionPatch>
@@ -21,9 +21,8 @@
 		<Version Condition=" '$(CalculatedVersion)' == '' ">1.0.0.0</Version>
 		<Version Condition=" '$(CalculatedVersion)' != '' ">$(CalculatedVersion)</Version>
 	</PropertyGroup>
-  
-  <ItemGroup>
-    <ProjectReference Include="..\..\Source\Salix.AspNetCore.TitlePage.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\..\Source\Salix.AspNetCore.TitlePage\Salix.AspNetCore.TitlePage.csproj" />
+	</ItemGroup>
 
 </Project>

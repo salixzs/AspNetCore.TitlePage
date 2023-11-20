@@ -1,5 +1,5 @@
-using System.Globalization;
 using System.Net.Mail;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Salix.AspNetCore.TitlePage;
@@ -9,6 +9,7 @@ namespace Salix.AspNetCore.TitlePage;
 /// </summary>
 public static partial class ConfigurationObfuscator
 {
+#if NET7_0_OR_GREATER
     [GeneratedRegex(@"(?<key>[^=;,]+)=(?<val>[^;,]+(,\d+)?)", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase, matchTimeoutMilliseconds: 1000)]
     private static partial Regex SqlConnectionStringRegex();
 
@@ -17,6 +18,7 @@ public static partial class ConfigurationObfuscator
 
     [GeneratedRegex(@"\b(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\b", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase, matchTimeoutMilliseconds: 1000)]
     private static partial Regex IpAddressParseRegex();
+#endif
 
     /// <summary>
     /// Hides sensitive data in SQL connection string. For local server (localhost) does not hide anything.
@@ -26,9 +28,13 @@ public static partial class ConfigurationObfuscator
     /// <returns>Obfuscated connection string with hidden sensitive parts.</returns>
     public static string ObfuscateSqlConnectionString(this string sqlConnectionString, bool partially = false)
     {
+#if NET7_0_OR_GREATER
         var parts = SqlConnectionStringRegex().Matches(sqlConnectionString);
-
-        string obfuscatedResult = string.Empty;
+#else
+        var sqlConnectionStringRegex = new Regex(@"(?<key>[^=;,]+)=(?<val>[^;,]+(,\d+)?)", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase, matchTimeout: TimeSpan.FromMilliseconds(1000));
+        var parts = sqlConnectionStringRegex.Matches(sqlConnectionString);
+#endif
+        var obfuscatedResult = new StringBuilder();
         bool isLocalServer = false;
         foreach (var part in parts.Cast<Match>())
         {
@@ -44,16 +50,19 @@ public static partial class ConfigurationObfuscator
                 case "NETWORK ADDRESS":
                     if (value.StartsWith("(localdb)", StringComparison.OrdinalIgnoreCase)
                         || value.StartsWith(".\\SQLExpress", StringComparison.OrdinalIgnoreCase)
-                        || value.ToUpper(CultureInfo.InvariantCulture).Contains("LOCALHOST"))
+                        || value.Contains("LOCALHOST", StringComparison.CurrentCultureIgnoreCase))
                     {
                         isLocalServer = true;
-                        obfuscatedResult += $"Server={value};";
+                        obfuscatedResult
+                            .Append("Server=")
+                            .Append(value)
+                            .Append(';');
                         break;
                     }
 
                     if (!partially)
                     {
-                        obfuscatedResult += "Server=[hidden];";
+                        obfuscatedResult.Append("Server=[hidden];");
                         break;
                     }
 
@@ -64,7 +73,12 @@ public static partial class ConfigurationObfuscator
                         string[] split = value.Split(',');
                         if (split.Length == 2)
                         {
-                            obfuscatedResult += $"Server={HideValuePartially(split[0])},{split[1]};";
+                            obfuscatedResult
+                                .Append("Server=")
+                                .Append(HideValuePartially(split[0]))
+                                .Append(',')
+                                .Append(split[1])
+                                .Append(';');
                             break;
                         }
                     }
@@ -75,62 +89,89 @@ public static partial class ConfigurationObfuscator
                         string[] split = value.Split('\\');
                         if (split.Length == 2)
                         {
-                            obfuscatedResult += $"Server={HideValuePartially(split[0])}\\{HideValuePartially(split[1])};";
+                            obfuscatedResult
+                                .Append("Server=")
+                                .Append(HideValuePartially(split[0]))
+                                .Append('\\')
+                                .Append(HideValuePartially(split[1]))
+                                .Append(';');
                             break;
                         }
                     }
 
-                    obfuscatedResult += $"Server={HideValuePartially(value)};";
+                    obfuscatedResult
+                        .Append("Server=")
+                        .Append(HideValuePartially(value))
+                        .Append(';');
                     break;
                 case "INITIAL CATALOG":
                 case "DATABASE":
                     if (isLocalServer)
                     {
-                        obfuscatedResult += $"Database={value};";
+                        obfuscatedResult
+                            .Append("Database=")
+                            .Append(value)
+                            .Append(';');
                         break;
                     }
 
                     if (!partially)
                     {
-                        obfuscatedResult += "Database=[hidden];";
+                        obfuscatedResult.Append("Database=[hidden];");
                         break;
                     }
 
-                    obfuscatedResult += $"Database={HideValuePartially(value)};";
+                    obfuscatedResult
+                        .Append("Database=")
+                        .Append(HideValuePartially(value))
+                        .Append(';');
                     break;
                 case "USER ID":
                 case "UID":
                     if (isLocalServer)
                     {
-                        obfuscatedResult += $"User Id={value};";
+                        obfuscatedResult
+                            .Append("User Id=")
+                            .Append(value)
+                            .Append(';');
                         break;
                     }
 
                     if (!partially)
                     {
-                        obfuscatedResult += "User Id=[hidden];";
+                        obfuscatedResult.Append("User Id=[hidden];");
                         break;
                     }
 
-                    obfuscatedResult += $"User Id={HideValuePartially(value)};";
+                    obfuscatedResult
+                        .Append("User Id=")
+                        .Append(HideValuePartially(value))
+                        .Append(';');
                     break;
                 case "PASSWORD":
                 case "PWD":
                     if (isLocalServer)
                     {
-                        obfuscatedResult += $"Password={value};";
+                        obfuscatedResult
+                            .Append("Password=")
+                            .Append(value)
+                            .Append(';');
                         break;
                     }
 
-                    obfuscatedResult += "Password=[hidden];";
+                    obfuscatedResult.Append("Password=[hidden];");
                     break;
                 default:
-                    obfuscatedResult += $"{key}={value};";
+                    obfuscatedResult
+                        .Append(key)
+                        .Append('=')
+                        .Append(value)
+                        .Append(';');
                     break;
             }
         }
 
-        return obfuscatedResult;
+        return obfuscatedResult.ToString();
     }
 
     /// <summary>
@@ -167,9 +208,22 @@ public static partial class ConfigurationObfuscator
         }
 
         // IP address
-        if (IpAddressDetermineRegex().Match(initialValue) != Match.Empty)
+#if NET7_0_OR_GREATER
+        var ipAddressMatches = IpAddressDetermineRegex().Match(initialValue);
+        var ipAddressExists = ipAddressMatches != Match.Empty;
+#else
+        var ipAddressRegex = new Regex(@"\A(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\z", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase, matchTimeout: TimeSpan.FromMilliseconds(1000));
+        var ipAddressMatches = ipAddressRegex.Matches(initialValue);
+        var ipAddressExists = ipAddressMatches.Count > 0;
+#endif
+        if (ipAddressExists)
         {
+#if NET7_0_OR_GREATER
             var ipParts = IpAddressParseRegex().Matches(initialValue);
+#else
+            var ipPartsRegex = new Regex(@"\b(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\b", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase, matchTimeout: TimeSpan.FromMilliseconds(1000));
+            var ipParts = ipPartsRegex.Matches(initialValue);
+#endif
             if (ipParts[0].Groups.Count == 5) // whole + 4 parts
             {
                 string obfuscatedIp = ipParts[0].Groups[1].Value.Length switch

@@ -1,6 +1,7 @@
 # Salix.AspNetCore.TitlePage
 
-There is a possibility to create frontend (index/title) page for API to display when its root URL is open in a browser. Without any supplied information, it is very simple one:
+There is a possibility to create frontend (index/title) page for API to display when its root URL is open in a browser. Without any supplied information,
+it is very simple one:
 
 ![Simple root page](./DocImages/root-page-simple.jpg)
 
@@ -9,13 +10,20 @@ Putting a little bit more effort, supplying some data to page renderer, it becom
 ![Root page example](./DocImages/root-page.JPG)
 
 [![Build & Tests](https://github.com/salixzs/AspNetCore.TitlePage/actions/workflows/build_test.yml/badge.svg?branch=main)](https://github.com/salixzs/AspNetCore.TitlePage/actions/workflows/build_test.yml)
-[![Nuget version](https://img.shields.io/nuget/v/Salix.AspNetCore.TitlePage.svg)](https://www.nuget.org/packages/Salix.AspNetCore.TitlePage/)
+[![NuGet version](https://img.shields.io/nuget/v/Salix.AspNetCore.TitlePage.svg)](https://www.nuget.org/packages/Salix.AspNetCore.TitlePage/)
 [![NuGet Downloads](https://img.shields.io/nuget/dt/Salix.AspNetCore.TitlePage.svg)](https://www.nuget.org/packages/Salix.AspNetCore.TitlePage/) (since 5-Jan-2023)
 
 #### If you use or like...
 
-Cosider "star" this project and/or better\
+Consider "star" this project and/or better\
 <a href="https://www.buymeacoffee.com/salixzs" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: 32px !important;width: 146px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a>
+
+
+See also other packages for some other/related functionality in Asp.Net Core (mostly APIs):
+- [JSON Error handler](https://www.nuget.org/packages/Salix.AspNetCore.JsonExceptionHandler/)
+- [Health check with JSON result + Health page](https://www.nuget.org/packages/Salix.AspNetCore.HealthCheck/)
+- [Configuration validation](https://www.nuget.org/packages/ConfigurationValidation.AspNetCore/)
+
 
 ### Usage
 
@@ -79,7 +87,9 @@ Let's walk through code.
 
 First - you would want to add `[ApiExplorerSettings(IgnoreApi = true)]` on Home controller to avoid it being added to Swagger generated true API endpoints.
 
-Page needs some of that technical and descriptive data to display on it, so here it should be supplied for `IndexPage` renderer. There are many possibilities where to get those values, some of them are described below, but as those are mostly strings - they can be hardcoded for simplest approach.
+Page needs some of that technical and descriptive data to display on it, so here it should be supplied for `IndexPage` renderer.
+There are many possibilities where to get those values, some of them are described below, but as those are mostly strings -
+they can be hardcoded for simplest approach.
 
 ##### ApiName
 Quite self-descriptive. Use your API name here. Set it either in IndexPage constructor or using extension method:
@@ -105,9 +115,12 @@ IndexPage indexPage = new IndexPage("Sample API")
 ```
 
 ##### Version
-For displaying version number, it can be added and changed here manually each time new version is pushed to production. If you have your versioning solution - you can get version from there. 
+For displaying version number, it can be added and changed here manually each time new version is pushed to production. If you have your versioning solution -
+you can get version from there. 
 
-Another possibility is to extract version from Assembly. Standard boilerplate is adding this automatically during compilation (and is always 1.0.0.0). To control this number, you should modify `*api*.csproj` file to prevent automatically generating default `AssemblyInfo.cs` file and add this file to project yourself in project root. Then in this file you can put version number and increment it when needed.
+Another possibility is to extract version from Assembly. Standard boilerplate is adding this automatically during compilation (and is always 1.0.0.0).
+To control this number, you should modify `*api*.csproj` file to prevent automatically generating default `AssemblyInfo.cs` file and
+add this file to project yourself in project root. Then in this file you can put version number and increment it when needed.
 Here is such file example:
 ```csharp
 using System.Reflection;
@@ -122,7 +135,9 @@ using System.Reflection;
 [assembly: AssemblyVersion("2.6.1.12")]
 ```
 
-In sample above shown two approaches on how to specify AssemblyVersion. First (with *) will automatically generate last two numbers, but they are not something auto-incremental. These numbers encodes build date/time (to which we will get later). Version without * will specify entire version number - hardcoded way.
+In sample above shown two approaches on how to specify AssemblyVersion. First (with *) will automatically generate last two numbers,
+but they are not something auto-incremental. These numbers encodes build date/time (to which we will get later).
+Version without * will specify entire version number - hardcoded way.
 
 To use this file, add these lines in `csproj` file:
 
@@ -154,8 +169,11 @@ IndexPage indexPage = new IndexPage("Sample API")
 
 ##### Version autoincrement/calculation in CSPROJ
 
-In oppose to having total control of AssemblyInfo.cs  (like written just above), you can add its values directly in CSPROJ file of the solution project with some markup and even simple calculations.
-Let say, we want to manually control major.minor version, but last two numbers in version to be calculated based on date and thus - auto-increment it. Here is an example to have third number in version to be a count of days since project/version was started and last (4th) number to be minutes since midnight within this day.
+In oppose to having total control of AssemblyInfo.cs  (like written just above),
+you can add its values directly in CSPROJ file of the solution project with some markup and even simple calculations.
+Let say, we want to manually control major.minor version, but last two numbers in version to be calculated based on date and thus -
+auto-increment it. Here is an example to have third number in version to be a count of days since project/version was started
+and last (4th) number to be minutes since midnight within this day.
 
 MAJOR.MINOR.dd.mm (like 1.3.98.126 = version 1.3, 98 days in project, 126 minutes since midnight)
 
@@ -202,7 +220,8 @@ IndexPage indexPage = new IndexPage("Sample API")
 
 ##### BuildMode
 
-Shows what build configuration was used to build project/solution. As it is any string, here is one of approaches how to trick that info into index page with compile time variables:
+Shows what build configuration was used to build project/solution.
+As it is any string, here is one of approaches how to trick that info into index page with compile time variables:
 ```csharp
 IndexPage indexPage = new IndexPage("Sample API");
 #if DEBUG
@@ -214,7 +233,8 @@ IndexPage indexPage = new IndexPage("Sample API");
 
 
 ##### Links (as Buttons)
-To add some additional links to other pages, there is a possibility to specify URLs for these to appear as buttons in page. First parameter is Button text/title, second is either relative or absolute URL to necessary page.
+To add some additional links to other pages, there is a possibility to specify URLs for these to appear as buttons in page.
+First parameter is Button text/title, second is either relative or absolute URL to necessary page.
 
 ```csharp
 IndexPage indexPage = new IndexPage("Sample API")
@@ -232,7 +252,11 @@ Page can include your own content on Index page.
 IndexPage indexPage = new IndexPage("Sample API")
     .IncludeContentFile("build_data.html");
 ```
-File must be located at root of your application (runtime root!). It can be either HTML or Textual. Rendered will judge difference by file extension. If it is HTM or HTML - it will assume it is HTML. Renderer can determine whether it is full HTML (with html, head, BODY tags) and will use only contents of the body tag. If there is no body tag - it will take file entirely. All other files are treated like TXT files and it shows entire file on page as-is.
+File must be located at root of your application (runtime root!). It can be either HTML or Textual.
+Rendered will judge difference by file extension.
+If it is HTM or HTML - it will assume it is HTML. Renderer can determine whether it is full HTML (with html, head, BODY tags)
+and will use only contents of the body tag. If there is no body tag - it will take file entirely.
+All other files are treated like TXT files and it shows entire file on page as-is.
 File size is limited to 50k.
 
 Possible applications may be:
@@ -244,7 +268,8 @@ Possible applications may be:
 > In Samples folder BuildScripts is PowerShell script sample to autogenerate build report with Git history as part of build.
 
 ##### Configuration values
-Although package includes configuration validations, it is very handy to see what exactly API configured from all JSONs (appsettings.json, appsettings.development.json, usersecret.json), Environment vairables, command line, system own configuration values etc.
+Although package includes configuration validations, it is very handy to see what exactly API configured from all JSONs
+(appsettings.json, appsettings.development.json, usersecret.json), Environment variables, command line, system own configuration values etc.
 
 Index page has extension method to set a list of string key+value pairs, which are then shown on page in "Configured values" section.
 
@@ -255,7 +280,8 @@ IndexPage indexPage = new IndexPage("Sample API")
     .SetConfigurationValues(configurationItems, !hostEnvironment.IsDevelopment());
 ```
 
-There is one helper class, which can extract all existing configuration key-value pairs from `IConfiguration` instance. To use it you first need to register it in dependency injection container:
+There is one helper class, which can extract all existing configuration key-value pairs from `IConfiguration` instance.
+To use it you first need to register it in dependency injection container:
 ```csharp
 services.AddTransient<IConfigurationValuesLoader, ConfigurationValuesLoader>();
 ```
@@ -267,7 +293,8 @@ After that you can use its method to get ***ALL*** configuration items during ru
 ```csharp
 Dictionary<string, string> configurationItems = _configLoader.GetConfigurationValues();
 ```
-As there are normally more than 50 coming from hosting system environment, you would probably want to filter out only ones which you are interested in, so list these keys in whitelist collection and pass it as parameter to method.
+As there are normally more than 50 coming from hosting system environment, you would probably want to filter out only ones which you are interested in,
+so list these keys in whitelist collection and pass it as parameter to method.
 ```csharp
 Dictionary<string, string> configurationItems =
     _configLoader.GetConfigurationValues(new HashSet<string>
@@ -275,14 +302,19 @@ Dictionary<string, string> configurationItems =
         "AllowedHosts", "contentRoot", "Logging", "LogicConfiguration"
     });
 ```
-**BEWARE:** In production environment or any environment accessible from public internet anyone will be able to see these values. For example, if you expose entire configured SQL connection string, it can be used to directly connect to your database. Same goes for any secure data, especially passwords, so filter out this list as needed. 
+**BEWARE:** In production environment or any environment accessible from public internet anyone will be able to see these values.
+For example, if you expose entire configured SQL connection string, it can be used to directly connect to your database.
+Same goes for any secure data, especially passwords, so filter out this list as needed. 
 ```csharp
 #if !DEBUG
      configurationItems = new HashSet<string, string>();
 #endif
 ```
-If you want to partially hide values there is a helper methods in package to hide specified values in smarter way. Supply configuration value to `string.HideValuePartially()` extension method and it will either remove small parts of value entirely or replace more than half of it with asterisks. It handles IP addresses, e-mail addresses in a specific way to leave their format intact.
-To partially hide SQL Server connection string, use extension method `connStr.ObfuscateSqlConnectionString(true)`, where boolean parameter allows to control whether Server name, Database name, User name and Passwords in connection string are hidden entirely or partially.
+If you want to partially hide values there is a helper methods in package to hide specified values in smarter way.
+Supply configuration value to `string.HideValuePartially()` extension method and it will either remove small parts of value entirely or
+replace more than half of it with asterisks. It handles IP addresses, e-mail addresses in a specific way to leave their format intact.
+To partially hide SQL Server connection string, use extension method `connStr.ObfuscateSqlConnectionString(true)`,
+where boolean parameter allows to control whether Server name, Database name, User name and Passwords in connection string are hidden entirely or partially.
 
 ![Obfuscation](./DocImages/obfuscation.jpg)
 
