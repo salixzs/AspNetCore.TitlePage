@@ -10,8 +10,8 @@ Putting a little bit more effort, supplying some data to page renderer, it becom
 ![Root page example](./DocImages/root-page.JPG)
 
 [![Build & Tests](https://github.com/salixzs/AspNetCore.TitlePage/actions/workflows/build_test.yml/badge.svg?branch=main)](https://github.com/salixzs/AspNetCore.TitlePage/actions/workflows/build_test.yml)
-[![NuGet version](https://img.shields.io/nuget/v/Salix.AspNetCore.TitlePage.svg)](https://www.nuget.org/packages/Salix.AspNetCore.TitlePage/)
-[![NuGet Downloads](https://img.shields.io/nuget/dt/Salix.AspNetCore.TitlePage.svg)](https://www.nuget.org/packages/Salix.AspNetCore.TitlePage/) (since 5-Jan-2023)
+[![NuGet version](https://img.shields.io/nuget/v/Salix.AspNetCore.FrontPage.svg)](https://www.nuget.org/packages/Salix.AspNetCore.FrontPage/)
+[![NuGet Downloads](https://img.shields.io/nuget/dt/Salix.AspNetCore.FrontPage.svg)](https://www.nuget.org/packages/Salix.AspNetCore.FrontPage/) (since 5-Jan-2023)
 
 #### If you use or like...
 
