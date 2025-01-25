@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
+    <TargetFrameworks>net6.0;net8.0;net9.0</TargetFrameworks>
     <RootNamespace>Salix.AspNetCore.TitlePage</RootNamespace>
     <LangVersion>latest</LangVersion>
     <NeutralLanguage>en</NeutralLanguage>
@@ -24,7 +24,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>utilities.png</PackageIcon>
     <Description>
-Adds title/home page for API with version number, ability to show selected configuration and custom content.
+Improved memory consuption on Title page generation. Support for .Net 9. Removed support for .Net 7.
     </Description>
     <PackageReadmeFile>nuget_readme.md</PackageReadmeFile>
     <PackageProjectUrl>https://github.com/salixzs/AspNetCore.TitlePage</PackageProjectUrl>
@@ -34,9 +34,9 @@ Adds title/home page for API with version number, ability to show selected confi
     <PackageReleaseNotes>
 Extracted from meta package Utilities.
     </PackageReleaseNotes>
-    <Version>1.1.0</Version>
-    <AssemblyVersion>1.1.0.0</AssemblyVersion>
-    <FileVersion>1.1.0.0</FileVersion>
+    <Version>1.2.0</Version>
+    <AssemblyVersion>1.2.0.0</AssemblyVersion>
+    <FileVersion>1.2.0.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -46,7 +46,7 @@ Extracted from meta package Utilities.
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="Roslynator.Analyzers" Version="4.2.0">
+    <PackageReference Include="Roslynator.Analyzers" Version="4.12.10">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

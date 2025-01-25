@@ -8,6 +8,8 @@ namespace Salix.AspNetCore.TitlePage;
 /// </summary>
 public class IndexPage
 {
+    private static readonly Regex BodyContentRegex = new(@"(?s)(?<=<body>).+(?=<\/body>)", RegexOptions.IgnoreCase | RegexOptions.Multiline);
+
     internal IndexPageValues IndexPageOptions { get; } = new IndexPageValues();
 
     /// <summary>
@@ -27,7 +29,7 @@ public class IndexPage
     public string GetContents()
     {
         // {IncludeFile} = <div class="column"></div> or string empty
-        string indexHtml = PageHtml.index;
+        var indexHtml = new StringBuilder(PageHtml.index);
         indexHtml = indexHtml
             .Replace("{ApiName}", this.IndexPageOptions.ApiName)
             .Replace("{Description}", this.IndexPageOptions.Description)
@@ -39,7 +41,7 @@ public class IndexPage
             ? indexHtml.Replace("{Built}", "---")
             : indexHtml.Replace("{Built}", this.IndexPageOptions.BuiltTime.ToHumanDateString());
 
-        if (this.IndexPageOptions.LinkButtons.Any())
+        if (this.IndexPageOptions.LinkButtons.Count > 0)
         {
             var buttons = new StringBuilder("<hr/>");
             buttons.AppendLine("<p style=\"margin-top:2em;\">");
@@ -63,11 +65,11 @@ public class IndexPage
                 .Replace("{OneColumnStyle}", "padding-right: 2rem;")
                 .Replace("{IncludeFile}", LoadFileContents(this.IndexPageOptions.IncludeFileName ?? "Missing file"));
 
-        indexHtml = this.IndexPageOptions.Configurations?.Any() == true
+        indexHtml = this.IndexPageOptions.Configurations?.Count > 0
             ? indexHtml.Replace("{ConfigValues}", this.GenerateConfigurationsTable())
             : indexHtml.Replace("{ConfigValues}", "Configuration values are hidden for security purposes.");
 
-        return indexHtml;
+        return indexHtml.ToString();
     }
 
     private static string LoadFileContents(string includeFileName)
@@ -87,7 +89,7 @@ public class IndexPage
         {
             if (contents.Contains("<body>"))
             {
-                contents = Regex.Match(contents, @"(?s)(?<=<body>).+(?=<\/body>)", RegexOptions.IgnoreCase | RegexOptions.Multiline).Value;
+                contents = BodyContentRegex.Match(contents).Value;
             }
 
             return $"<div class=\"column\">{contents}</div>";
