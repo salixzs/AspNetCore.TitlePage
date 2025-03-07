@@ -47,7 +47,9 @@ namespace Salix.AspNetCore.TitlePage.Tests
             _output.WriteLine("     End: " + (endTime == null ? "NULL" : endTime.Value.ToString("dd.MM.yyyy HH:mm")));
             _output.WriteLine("    Days: " + textDays.ToString());
             _output.WriteLine("Expected: " + expected);
-            startTime.ToHumanDateString(endTime, textDays).Should().Be(expected);
+            var result = startTime.ToHumanDateString(endTime, textDays);
+            _output.WriteLine("  Actual: " + expected);
+            result.Should().Be(expected);
         }
 
         public static IEnumerable<object[]> HumanDateStringTestData()

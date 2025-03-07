@@ -10,68 +10,61 @@ public class ConfigurationValuesLoader : IConfigurationValuesLoader
     /// <inheritdoc cref="IConfigurationValuesLoader"/>
     public ConfigurationValuesLoader(IConfiguration configuration) => _configuration = (IConfigurationRoot)configuration;
 
-    /// <inheritdoc/>
     public Dictionary<string, string?> GetConfigurationValues(HashSet<string>? whitelistFilter = null)
     {
         var selectedConfigurations = new Dictionary<string, string?>();
-        void RecurseChildren(IEnumerable<IConfigurationSection> children, string parentKey)
+        RecurseChildren(_configuration.GetChildren(), "", selectedConfigurations, whitelistFilter);
+        return selectedConfigurations;
+    }
+
+    private void RecurseChildren(IEnumerable<IConfigurationSection> children, string parentKey, Dictionary<string, string?> selectedConfigurations, HashSet<string>? whitelistFilter)
+    {
+        foreach (var child in children)
         {
-            foreach (var child in children)
+            string totalKey = BuildTotalKey(parentKey, child.Key);
+            (string? value, var provider) = GetValueAndProvider(_configuration, child.Path);
+
+            if (provider != null && (whitelistFilter?.Any(k => totalKey.StartsWith(k, StringComparison.OrdinalIgnoreCase)) != false))
             {
-                string totalKey;
-                if (child.Key.IsInteger())
-                {
-                    totalKey = string.IsNullOrEmpty(parentKey) ? child.Key : $"{parentKey}[{child.Key}]";
-                }
-                else if (!string.IsNullOrEmpty(parentKey) && parentKey.EndsWith("]", StringComparison.OrdinalIgnoreCase))
-                {
-                    totalKey = string.IsNullOrEmpty(parentKey) ? child.Key : $"{parentKey}.{child.Key}";
-                }
-                else
-                {
-                    totalKey = string.IsNullOrEmpty(parentKey) ? child.Key : $"{parentKey}/{child.Key}";
-                }
-
-                (string? value, var provider) = GetValueAndProvider(_configuration, child.Path);
-                if (provider != null && (whitelistFilter == null || (whitelistFilter?.Any(k => totalKey.StartsWith(k, StringComparison.OrdinalIgnoreCase)) == true)))
-                {
-                    if (provider.GetType().BaseType?.Name == "FileConfigurationProvider")
-                    {
-                        selectedConfigurations.Add($"{totalKey} ({((FileConfigurationProvider)provider).Source.Path})", value);
-                        continue;
-                    }
-
-                    switch (provider.GetType().Name)
-                    {
-                        case "EnvironmentVariablesConfigurationProvider":
-                            selectedConfigurations.Add($"{totalKey} (ENV)", value);
-                            continue;
-                        case "CommandLineConfigurationProvider":
-                            selectedConfigurations.Add($"{totalKey} (CMD)", value);
-                            continue;
-                        case "KeyPerFileConfigurationProvider":
-                            selectedConfigurations.Add($"{totalKey} (KeyFile)", value);
-                            continue;
-                        case "AzureAppConfigurationProvider":
-                            selectedConfigurations.Add($"{totalKey} (Azure AppCfg)", value);
-                            continue;
-                        case "AzureKeyVaultConfigurationProvider":
-                            selectedConfigurations.Add($"{totalKey} (KeyVault)", value);
-                            continue;
-                        default:
-                            selectedConfigurations.Add($"{totalKey} (SYS/MEM)", value);
-                            break;
-                    }
-                }
-                else
-                {
-                    RecurseChildren(child.GetChildren(), totalKey);
-                }
+                AddConfiguration(selectedConfigurations, totalKey, value, provider);
+            }
+            else
+            {
+                RecurseChildren(child.GetChildren(), totalKey, selectedConfigurations, whitelistFilter);
             }
         }
+    }
 
-        RecurseChildren(_configuration.GetChildren(), "");
-        return selectedConfigurations;
+    private string BuildTotalKey(string parentKey, string childKey)
+    {
+        if (childKey.IsInteger())
+        {
+            return string.IsNullOrEmpty(parentKey) ? childKey : $"{parentKey}[{childKey}]";
+        }
+
+        if (!string.IsNullOrEmpty(parentKey))
+        {
+            return parentKey.EndsWith(']') ? $"{parentKey}.{childKey}" : $"{parentKey}/{childKey}";
+        }
+
+        return childKey;
+    }
+
+    private void AddConfiguration(Dictionary<string, string?> selectedConfigurations, string totalKey, string? value, IConfigurationProvider provider)
+    {
+        string providerType = provider.GetType().Name;
+        string providerSource = providerType switch
+        {
+            "FileConfigurationProvider" => $" ({((FileConfigurationProvider)provider).Source.Path})",
+            "EnvironmentVariablesConfigurationProvider" => " (ENV)",
+            "CommandLineConfigurationProvider" => " (CMD)",
+            "KeyPerFileConfigurationProvider" => " (KeyFile)",
+            "AzureAppConfigurationProvider" => " (Azure AppCfg)",
+            "AzureKeyVaultConfigurationProvider" => " (KeyVault)",
+            _ => " (SYS/MEM)"
+        };
+
+        selectedConfigurations.Add($"{totalKey}{providerSource}", value);
     }
 
     private static (string? Value, IConfigurationProvider? Provider) GetValueAndProvider(

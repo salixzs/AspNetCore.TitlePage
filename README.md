@@ -49,36 +49,39 @@ public class HomeController : ControllerBase
     [HttpGet("/")]
     public ContentResult Index()
     {
-       // Load filtered configuration items from entire configuration based on given whitelist filter
+        // Load filtered configuration items from entire configuration based on given whitelist filter
+        if (_hostEnvironment.EnvironmentName == "Development")
+        {
             Dictionary<string, string> configurationItems =
                 _configLoader.GetConfigurationValues(new HashSet<string>
                 {
                     "AllowedHosts", "contentRoot", "Logging", "LogicConfiguration"
                 });
+        }
 
-            var apiAssembly = Assembly.GetAssembly(typeof(Startup));
-            IndexPage indexPage = new IndexPage("Sample API")
-                .SetDescription("Demonstrating capabilities of Salix.AspNetCore.TitlePage NuGet package.")
-                .SetHostingEnvironment(_hostingEnvironment.EnvironmentName)
-                .SetVersionFromAssembly(apiAssembly, 2) // Takes version from assembly - just first two numbers as specified
-                .SetBuildTimeFromAssembly(apiAssembly)  // For this to work need non-deterministic AssemblyInfo.cs version set.
-                .SetHealthPageUrl(HealthTestEndpoint)   // See operation URL set on action method below!
-                .SetSwaggerUrl("/swagger")
-                .SetConfigurationValues(configurationItems) // Giving list of selected configuration values
-                .IncludeContentFile("build_data.html");
+        var apiAssembly = Assembly.GetAssembly(typeof(Startup));
+        IndexPage indexPage = new IndexPage("Sample API")
+            .SetDescription("Demonstrating capabilities of Salix.AspNetCore.TitlePage NuGet package.")
+            .SetHostingEnvironment(_hostingEnvironment.EnvironmentName)
+            .SetVersionFromAssembly(apiAssembly, 2) // Takes version from assembly - just first two numbers as specified
+            .SetBuildTimeFromAssembly(apiAssembly)  // For this to work need non-deterministic AssemblyInfo.cs version set.
+            .SetHealthPageUrl(HealthTestEndpoint)   // See operation URL set on action method below!
+            .SetSwaggerUrl("/swagger")
+            .SetConfigurationValues(configurationItems, shouldHide: _hostEnvironment.EnvironmentName != "Development") // Giving list of selected configuration values
+            .IncludeContentFile("build_data.html");
 
-            // "Hacking" to understand what mode API is getting compiled.
+        // "Hacking" to understand what mode API is getting compiled.
 #if DEBUG
-            indexPage.SetBuildMode("#DEBUG (Should not be in production!)");
+        indexPage.SetBuildMode("#DEBUG (Should not be in production!)");
 #else
-            indexPage.SetBuildMode("Release");
+        indexPage.SetBuildMode("Release");
 #endif
-            return new ContentResult
-            {
-                ContentType = "text/html",
-                StatusCode = (int)HttpStatusCode.OK,
-                Content = indexPage.GetContents(), // Get the resulting page HTML
-            };
+        return new ContentResult
+        {
+            ContentType = "text/html",
+            StatusCode = (int)HttpStatusCode.OK,
+            Content = indexPage.GetContents(), // Get the resulting page HTML
+        };
     }
 }
 ```
@@ -268,7 +271,7 @@ Possible applications may be:
 > In Samples folder BuildScripts is PowerShell script sample to autogenerate build report with Git history as part of build.
 
 ##### Configuration values
-Although package includes configuration validations, it is very handy to see what exactly API configured from all JSONs
+It might be handy to see what configuration values exactly API is getting from all configuration source JSONs
 (appsettings.json, appsettings.development.json, usersecret.json), Environment variables, command line, system own configuration values etc.
 
 Index page has extension method to set a list of string key+value pairs, which are then shown on page in "Configured values" section.
@@ -310,6 +313,8 @@ Same goes for any secure data, especially passwords, so filter out this list as 
      configurationItems = new HashSet<string, string>();
 #endif
 ```
+**NOTE:** You may also want to skip using ConfigurationValuesLoader if you are not showing them, as it is quite heavy operation.
+
 If you want to partially hide values there is a helper methods in package to hide specified values in smarter way.
 Supply configuration value to `string.HideValuePartially()` extension method and it will either remove small parts of value entirely or
 replace more than half of it with asterisks. It handles IP addresses, e-mail addresses in a specific way to leave their format intact.

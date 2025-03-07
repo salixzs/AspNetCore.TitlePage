@@ -195,7 +195,10 @@ public static class IndexPageExtensions
     /// Appends configuration values to page.
     /// </summary>
     /// <param name="idxPage">Page object.</param>
-    /// <param name="configurations">Collections of configuration items to add.</param>
+    /// <param name="configurations">
+    /// Collections of configuration items to add.<br/>
+    /// NOTE: You may want to SKIP CREATING these if they are not to be shown on page anyway by setting "shouldHide" parameter to true.
+    /// </param>
     /// <param name="shouldHide">When true (default - false) - will not add given items to page. Used for dynamic control (Hosting.IsDevelopment).</param>
     public static IndexPage SetConfigurationValues(this IndexPage idxPage, Dictionary<string, string> configurations, bool shouldHide = false)
     {
@@ -214,5 +217,5 @@ public static class IndexPageExtensions
     /// <returns>
     /// <c>true</c> if the specified string to check is integer; otherwise (incl. empty/null), <c>false</c>.
     /// </returns>
-    public static bool IsInteger(this string stringToCheck) => !string.IsNullOrWhiteSpace(stringToCheck) && stringToCheck.Trim().All(char.IsNumber);
+    public static bool IsInteger(this string stringToCheck) => !string.IsNullOrWhiteSpace(stringToCheck) && int.TryParse(stringToCheck, out _);
 }
